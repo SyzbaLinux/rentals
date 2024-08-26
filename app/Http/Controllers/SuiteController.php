@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Property;
+use App\Models\Suite;
 use Illuminate\Http\Request;
 
-class PropertyController extends Controller
+class SuiteController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return inertia('Admin/Properties', [
-            'projects' => Property::all()
-        ]);
+        //
     }
 
     /**
@@ -36,7 +34,7 @@ class PropertyController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Property $property)
+    public function show(Suite $suite)
     {
         //
     }
@@ -44,7 +42,7 @@ class PropertyController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Property $property)
+    public function edit(Suite $suite)
     {
         //
     }
@@ -52,7 +50,7 @@ class PropertyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Property $property)
+    public function update(Request $request, Suite $suite)
     {
         //
     }
@@ -60,7 +58,7 @@ class PropertyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Property $property)
+    public function destroy(Suite $suite)
     {
         //
     }

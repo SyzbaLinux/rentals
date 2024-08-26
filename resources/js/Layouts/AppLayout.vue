@@ -97,6 +97,7 @@ export default {
 </script>
 
 <template>
+    <Head :title="title"></Head>
     <v-app id="inspire">
         <v-navigation-drawer v-model="drawer" class="glass-shadow">
             <v-list  density="compact" class="mt-n3">
