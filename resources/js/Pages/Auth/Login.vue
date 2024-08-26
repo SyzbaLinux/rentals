@@ -28,10 +28,10 @@ const submit = () => {
 
      <Default>
          <form @submit.prevent="submit">
-            <v-card class="glass mx-auto" max-width="600">
+            <v-card class="glass-99 mx-auto" max-width="600">
 
-                <v-card-text>
-                    <h1>Login</h1>
+                <v-card-text class="text-center">
+                    <h1 class="text-h3 my-3">Login</h1>
                 </v-card-text>
                 <v-card-text>
                         <v-text-field
