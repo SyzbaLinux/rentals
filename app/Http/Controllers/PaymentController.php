@@ -12,23 +12,49 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        //
+        return inertia('Admin/Payments', [
+            'payments' => Payment::all()
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'lease_agreement_id' => 'required|exists:lease_agreements,id',
+            'client_id' => 'required|exists:clients,id',
+            'payment_date' => 'required|date',
+            'room_number' => 'nullable|exists:suites,id',  // Assuming 'rooms' is the related table
+            'receipt_number' => 'nullable|string|max:255',
+            'amount_paid' => 'required|numeric|min:0',
+            'description' => 'nullable|string|max:255',
+            'payment_method' => 'required|string|in:cash,credit_card,bank_transfer,etc',  // Add more methods if needed
+            'currency' => 'required|string|in:usd,eur,gbp,etc',  // Add more currencies if needed
+            'amount_in_words' => 'nullable|string',
+        ]);
+
+        $payment = Payment::firstOrNew(['id' => $request->id]);
+
+        $payment->lease_agreement_id = $request->lease_agreement_id;
+        $payment->client_id = $request->client_id;
+        $payment->payment_date = $request->payment_date;
+        $payment->room_number = $request->room_number;
+        $payment->receipt_number = $request->receipt_number;
+        $payment->amount_paid = $request->amount_paid;
+        $payment->description = $request->description;
+        $payment->payment_method = $request->payment_method;
+        $payment->currency = $request->currency;
+        $payment->amount_in_words = $request->amount_in_words;
+        $payment->save();
+
+        return back()->with('message', [
+            'type'        => 'success',
+            'description' => '',
+            'title'       => 'Payment Details Saved',
+        ]);
     }
 
     /**
@@ -39,27 +65,18 @@ class PaymentController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Payment $payment)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Payment $payment)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Payment $payment)
     {
-        //
+        $payment->delete();
+
+        return back()->with('message', [
+            'type'        => 'success',
+            'description' => '',
+            'title'        => 'Property Deleted',
+        ]);
     }
 }

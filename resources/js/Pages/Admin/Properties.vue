@@ -1,28 +1,28 @@
 <template>
-    <AppLayout title="All Subjects">
+    <AppLayout title="All Properties">
         <div class="glass pa-3">
             <v-toolbar class="rounded-lg px-2 mb-5" density="comfortable">
                 <v-toolbar-title>
-                    All Subjects ({{ $page.props.projects.length }})
+                    All Properties ({{ $page.props.properties.length }})
                 </v-toolbar-title>
                 <v-spacer />
                 <v-btn @click="dialog = true" variant="flat">
-                    Add Subject
+                    Add Property
                 </v-btn>
             </v-toolbar>
 
-            <v-dialog max-width="600"  v-model="dialog">
+            <v-dialog max-width="600" v-model="dialog">
                 <v-card variant="flat">
-                    <v-card-title class="mb-5">Project Information Form</v-card-title>
+                    <v-card-title class="mb-5">Property Information Form</v-card-title>
                     <v-card-text>
                         <v-row>
                             <v-col cols="12" md="12">
                                 <v-text-field
-                                    v-model="form.name"
-                                    label="Name"
+                                    v-model="form.title"
+                                    label="Title"
                                     prepend-inner-icon="mdi-book"
                                     :rules="[rules.required]"
-                                    :error-messages="$page.props.errors.name"
+                                    :error-messages="$page.props.errors.title"
                                 />
                             </v-col>
                         </v-row>
@@ -34,6 +34,48 @@
                                     label="Description"
                                     prepend-inner-icon="mdi-text"
                                     :error-messages="$page.props.errors.description"
+                                />
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="12">
+                                <v-text-field
+                                    v-model="form.address"
+                                    label="Address"
+                                    prepend-inner-icon="mdi-map-marker"
+                                    :rules="[rules.required]"
+                                    :error-messages="$page.props.errors.address"
+                                />
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col cols="12" md="4">
+                                <v-text-field
+                                    v-model="form.number_of_rooms"
+                                    label="Number of Rooms"
+                                    prepend-inner-icon="mdi-door"
+                                    :rules="[rules.required, rules.integer]"
+                                    :error-messages="$page.props.errors.number_of_rooms"
+                                />
+                            </v-col>
+                            <v-col cols="12" md="4">
+                                <v-select
+                                    v-model="form.type"
+                                    :items="['commercial', 'residential']"
+                                    label="Type"
+                                    prepend-inner-icon="mdi-home"
+                                    :rules="[rules.required]"
+                                    :error-messages="$page.props.errors.type"
+                                />
+                            </v-col>
+                            <v-col cols="12" md="4">
+                                <v-switch
+                                    v-model="form.is_available"
+                                    label="Available"
+                                    :true-value="1"
+                                    :false-value="0"
+                                    inset
+                                    color="primary"
                                 />
                             </v-col>
                         </v-row>
@@ -54,16 +96,26 @@
             </v-dialog>
 
             <v-data-table
-                :items="$page.props.projects"
+                :items="$page.props.properties"
                 :headers="headers"
             >
+                <template v-slot:item.is_available="{ item }">
+                    <v-chip v-if="item.is_available" color="success" variant="flat" size="small">
+                        Available
+                    </v-chip>
+
+                    <v-chip v-else color="error" variant="flat" size="small">
+                        Taken
+                    </v-chip>
+                </template>
+
                 <template v-slot:item.actions="{ item }">
                     <div class="d-flex">
-                        <InertiaLink :href="route('admin.projects.show',item)">
+                        <InertiaLink :href="route('admin.properties.show', item)">
                             <v-btn class="mx-1" color="success">View</v-btn>
                         </InertiaLink>
-                        <v-btn class="mx-1" @click="editSubject(item)">Edit</v-btn>
-                        <v-btn color="error" class="mx-1" @click="deleteSubject(item)">
+                        <v-btn class="mx-1" @click="editProperty(item)">Edit</v-btn>
+                        <v-btn color="error" class="mx-1" @click="deleteProperty(item)">
                             <v-icon>mdi-trash-can</v-icon>
                         </v-btn>
                     </div>
@@ -77,30 +129,35 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 
 export default {
-    components: {AppLayout},
+    components: { AppLayout },
     data() {
         return {
             form: this.$inertia.form({
                 id: null,
-                name: null,
-                code: null,
-                description: null,
+                title: '',
+                description: '',
+                address: '',
+                number_of_rooms: 0,
+                is_available: true,
+                type: 'commercial',
             }),
             headers: [
-                { title: 'ID', key: 'id' },
-                { title: 'Project Name', key: 'name' },
-                { title: 'Description', key: 'description' },
-                { title: 'Actions', key: 'actions', sortable: false },
+                {title: 'ID', key: 'id'},
+                {title: 'Title', key: 'title'},
+                {title: 'Is Available', key: 'is_available'},
+                {title: 'Description', key: 'description'},
+                {title: 'Actions', key: 'actions', sortable: false},
             ],
             dialog: false,
             rules: {
                 required: (value) => !!value || 'This field is required.',
+                integer: (value) => Number.isInteger(Number(value)) || 'Must be an integer.',
             },
         };
     },
     methods: {
         submitForm() {
-            this.form.post(route('admin.projects.store'), {
+            this.form.post(route('admin.properties.store'), {
                 onSuccess: () => {
                     this.closeDialog();
                 },
@@ -110,28 +167,33 @@ export default {
             this.dialog = false;
             this.form.reset();
         },
-        editSubject(project) {
-            this.form.id = project.id;
-            this.form.name = project.name;
-            this.form.description = project.description;
+
+        editProperty(property) {
+            this.form.id = property.id;
+            this.form.title = property.title;
+            this.form.description = property.description;
+            this.form.address = property.address;
+            this.form.number_of_rooms = property.number_of_rooms;
+            this.form.is_available = property.is_available;
+            this.form.type = property.type;
             this.dialog = true;
         },
-        deleteSubject(project) {
+
+        deleteProperty(property) {
             this.$swal.fire({
-                title: "Are you sure you want to delete this project?",
-                icon:'question',
+                title: "Are you sure you want to delete this property?",
+                icon: 'question',
                 showDenyButton: true,
                 confirmButtonText: "Delete",
                 denyButtonText: `Cancel`,
             }).then((result) => {
                 if (result.isConfirmed) {
-                    this.$inertia.visit(route('admin.projects.destroy', project), {
+                    this.$inertia.visit(route('admin.properties.destroy', property), {
                         method: 'delete',
                     });
                 }
             });
         },
     },
-
 }
 </script>

@@ -17,6 +17,6 @@ Route::group([
     Route::resource('/clients', \App\Http\Controllers\ClientController::class);
     Route::resource('/lease-agreements', \App\Http\Controllers\LeaseAgreementController::class);
     Route::resource('/payments', \App\Http\Controllers\PaymentController::class);
-    Route::resource('/suites', \App\Http\Controllers\SuiteController::class);
+    Route::resource('/properties/suites', \App\Http\Controllers\SuiteController::class);
 
 });

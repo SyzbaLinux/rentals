@@ -28,6 +28,13 @@ export default createVuetify({
             color: 'primary'
         },
 
+
+        VFileInput: {
+            variant: 'outlined',
+            density: 'comfortable',
+            color: 'primary'
+        },
+
         VTextarea: {
             variant: 'outlined',
             density: 'comfortable',
@@ -40,7 +47,7 @@ export default createVuetify({
             color: 'primary'
         },
 
-      
+
         VTooltip: {
             location: 'top'
         },

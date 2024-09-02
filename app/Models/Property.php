@@ -7,5 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Property extends Model
 {
-    use HasFactory;
+
+    public function suites()
+    {
+        return $this->hasMany(Suite::class);
+    }
+
+    public function tenants()
+    {
+        return $this->belongsToMany(Client::class);
+    }
 }

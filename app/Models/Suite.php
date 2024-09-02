@@ -7,5 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Suite extends Model
 {
-    use HasFactory;
+    public function property()
+    {
+        return $this->belongsTo(Property::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
 }

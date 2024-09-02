@@ -28,7 +28,25 @@ class SuiteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+         $request->validate([
+
+         ]);
+
+        $suite = Suite::find($request->id) ?? new Suite();
+
+        $suite->name           = $request->name;
+        $suite->description    = $request->description;
+        $suite->monthly_rental = $request->monthly_rental;
+        $suite->is_available   = $request->is_available;
+        $suite->property_id    = $request->property_id;
+        $suite->lease_agreement_id   = $request->lease_agreement_id;
+        $suite->save();
+
+        return back()->with('message', [
+            'type'        => 'success',
+            'description' => '',
+            'title'        => 'Property Suite/Room Added Successfully',
+        ]);
     }
 
     /**
@@ -36,30 +54,25 @@ class SuiteController extends Controller
      */
     public function show(Suite $suite)
     {
-        //
+        return inertia('Admin/ViewSuite',[
+            'suite' => $suite->load(['property'])
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Suite $suite)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Suite $suite)
-    {
-        //
-    }
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Suite $suite)
     {
-        //
+        $suite->delete();
+
+        return  back()->with('message', [
+            'type'        => 'success',
+            'description' => '',
+            'title'        => 'Suite Deleted!',
+        ]);
     }
 }
